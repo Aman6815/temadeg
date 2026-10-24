@@ -41,5 +41,5 @@ export async function signup(
     return { error: "አካውንቱን መፍጠር አልተቻለም። እንደገና ይሞክሩ (Could not create the account. Please try again)." };
   }
 
-  redirect("/"); // temporary; we'll send users to their own page later
+  redirect("/account");
 }

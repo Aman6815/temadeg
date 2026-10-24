@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { signup, type SignupState } from "./actions";
+import Link from "next/link";
 
 const initialState: SignupState = {};
 
@@ -56,6 +57,11 @@ export default function SignupPage() {
           className="w-full rounded bg-green-700 px-4 py-2 font-medium text-white disabled:opacity-50">
           {pending ? "በመመዝገብ ላይ… (Signing up…)" : "ይመዝገቡ (Sign up)"}
         </button>
+
+        <p className="mt-4 text-sm">
+            አካውንት አለዎት?{" "}
+            <Link href="/login" className="underline">ይግቡ (Log in)</Link>
+        </p>
       </form>
     </main>
   );
