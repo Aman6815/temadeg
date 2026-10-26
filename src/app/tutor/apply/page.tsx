@@ -23,7 +23,7 @@ export default async function ApplyPage({
   const { data: application } = await supabase
     .from("tutor_applications")
     .select(
-      "status, city, sub_city, is_student, education_level, institution, tutoring_experience, child_teaching_experience, grade_min, grade_max, availability_note, expected_monthly_fee"
+      "status, city, sub_city, is_student, education_level, institution, tutoring_experience, grade_min, grade_max, availability_note, expected_hourly_fee"
     )
     .eq("tutor_id", user.id)
     .maybeSingle();
@@ -40,6 +40,16 @@ export default async function ApplyPage({
     .eq("id", user.id)
     .single();
 
+  const { data: slots } = await supabase
+    .from("tutor_availability")
+    .select("day_of_week, start_hour, end_hour")
+    .eq("tutor_id", user.id);
+
+  const availability: Record<number, { start: number; end: number }> = {};
+  for (const s of slots ?? []) {
+    availability[s.day_of_week] = { start: s.start_hour, end: s.end_hour };
+  }
+
   const defaults = {
     phone: profile?.phone ?? "",
     city: application.city ?? "",
@@ -48,11 +58,10 @@ export default async function ApplyPage({
     education_level: application.education_level ?? "",
     institution: application.institution ?? "",
     tutoring_experience: application.tutoring_experience ?? "",
-    child_teaching_experience: application.child_teaching_experience ?? "",
     grade_min: String(application.grade_min ?? ""),
     grade_max: String(application.grade_max ?? ""),
     availability_note: application.availability_note ?? "",
-    expected_monthly_fee: String(application.expected_monthly_fee ?? ""),
+    expected_hourly_fee: String(application.expected_hourly_fee ?? ""),
   };
 
   return (
@@ -71,7 +80,13 @@ export default async function ApplyPage({
 
       <h2 className="mt-4 text-xl font-medium">{stepTitles[step - 1]}</h2>
 
-      <StepForm key={step} step={step} totalSteps={TOTAL_STEPS} defaults={defaults} />
+      <StepForm
+        key={step}
+        step={step}
+        totalSteps={TOTAL_STEPS}
+        defaults={defaults}
+        availability={availability}
+      />
     </main>
   );
 }
