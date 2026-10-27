@@ -2,14 +2,14 @@
 
 import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth";
+import { site } from "@/config/site";
 
 export type StepState = { error?: string; missing?: string[] };
 
 const EDUCATION = ["high_school", "diploma", "bachelor", "master", "doctorate"];
 const LANGUAGES = ["amharic", "english", "oromo", "tigrinya", "wolaita", "other"];
 const MODES = ["online", "in_person", "both"];
-const AGREEMENT_VERSION = "2026-11-v1";
-const SAVE_ERROR = "ማስቀመጥ አልተቻለም። እንደገና ይሞክሩ (Could not save. Please try again).";
+const SAVE_ERROR = "We could not save your answers. Please try again.";
 
 const text = (v: FormDataEntryValue | null) => String(v ?? "").trim();
 const optional = (v: FormDataEntryValue | null) => text(v) || null;
@@ -18,7 +18,8 @@ const toInt = (v: FormDataEntryValue | null) => {
   return /^\d+$/.test(s) ? Number(s) : NaN;
 };
 // Phone numbers, @handles and links are not allowed in public text.
-const hasContactInfo = (s: string) => /\d{7,}|@|t\.me|https?:|www\./i.test(s.replace(/[\s-]/g, ""));
+const hasContactInfo = (s: string) =>
+  /\d{7,}|@|t\.me|https?:|www\./i.test(s.replace(/[\s-]/g, ""));
 
 export async function saveStep(
   _prev: StepState,
@@ -36,13 +37,13 @@ export async function saveStep(
     const telegram = optional(formData.get("telegram"));
 
     if (!/^\+?[0-9 ]{9,15}$/.test(phone)) {
-      return { error: "ትክክለኛ ስልክ ቁጥር ያስገቡ (Please enter a valid phone number)." };
+      return { error: "Enter a valid phone number, for example 0911 000 000." };
     }
     if (!city || city.length > 100 || (subCity && subCity.length > 100)) {
-      return { error: "ከተማውን በትክክል ያስገቡ (Please enter your city correctly)." };
+      return { error: "Enter your city. Names can be up to 100 characters." };
     }
     if (telegram && !/^@?[A-Za-z0-9_]{3,32}$/.test(telegram)) {
-      return { error: "የቴሌግራም ስም ትክክል አይደለም (The Telegram username is not valid)." };
+      return { error: "The Telegram username is not valid. Use 3 to 32 letters, numbers or underscores." };
     }
 
     const { data: updated, error } = await supabase
@@ -66,13 +67,13 @@ export async function saveStep(
     const experience = optional(formData.get("tutoringExperience"));
 
     if (!EDUCATION.includes(level)) {
-      return { error: "የትምህርት ደረጃ ይምረጡ (Please choose your education level)." };
+      return { error: "Choose the highest level of education you have completed." };
     }
     if (
       (institution && institution.length > 200) ||
       (experience && experience.length > 2000)
     ) {
-      return { error: "ጽሑፉ በጣም ረጅም ነው (The text is too long)." };
+      return { error: "One of your answers is too long. Please shorten it." };
     }
 
     values = {
@@ -93,19 +94,19 @@ export async function saveStep(
     const subjectIds = [...new Set(formData.getAll("subjects").map((v) => toInt(v)))];
 
     if (!headline || headline.length > 100 || !bio || bio.length > 600) {
-      return { error: "አጭር ርዕስና መግለጫ ያስገቡ (Please enter a headline and a short bio)." };
+      return { error: "Add a headline (up to 100 characters) and a short bio (up to 600 characters)." };
     }
     if (hasContactInfo(headline) || hasContactInfo(bio)) {
-      return { error: "ስልክ ቁጥር፣ @ ወይም አገናኝ አይጻፉ (Please remove phone numbers, @handles and links)." };
+      return { error: "Remove phone numbers, @handles and links from your headline and bio. Families contact you through Temadeg." };
     }
     if (years !== null && (!Number.isInteger(years) || years > 60)) {
-      return { error: "የልምድ ዓመት ትክክል አይደለም (The years of experience are not valid)." };
+      return { error: "Enter your years of experience as a number between 0 and 60." };
     }
     if (languages.length === 0) {
-      return { error: "ቢያንስ አንድ ቋንቋ ይምረጡ (Please choose at least one language)." };
+      return { error: "Choose at least one language you can teach in." };
     }
     if (subjectIds.length === 0 || subjectIds.some((n) => !Number.isInteger(n))) {
-      return { error: "ቢያንስ አንድ ትምህርት ይምረጡ (Please choose at least one subject)." };
+      return { error: "Choose at least one subject you can tutor." };
     }
 
     const { error: subjectsError } = await supabase.rpc("set_my_subjects", {
@@ -145,22 +146,22 @@ export async function saveStep(
       gradeMax > 12 ||
       gradeMin > gradeMax
     ) {
-      return { error: "የክፍል ደረጃዎችን በትክክል ይምረጡ (Please choose a valid grade range)." };
+      return { error: "Choose a valid grade range. The first grade cannot be higher than the last." };
     }
     if (!MODES.includes(mode)) {
-      return { error: "የማስተማሪያ መንገድ ይምረጡ (Please choose how you teach)." };
+      return { error: "Choose how you teach: online, in person, or both." };
     }
     if (areas.length > 10 || areas.some((a) => a.length > 60)) {
-      return { error: "ሰፈሮቹ ከ10 መብለጥ የለባቸውም (Please list at most 10 neighborhoods)." };
+      return { error: "List up to 10 neighborhoods, each up to 60 characters." };
     }
     if (mode !== "online" && areas.length === 0) {
-      return { error: "በአካል ለማስተማር ሰፈሮችን ያስገቡ (Please list the neighborhoods where you teach in person)." };
+      return { error: "List the neighborhoods where you can teach in person." };
     }
     if (note && note.length > 1000) {
-      return { error: "ማስታወሻው በጣም ረጅም ነው (The note is too long)." };
+      return { error: "Your schedule note is too long. Please shorten it." };
     }
     if (fee !== null && (!Number.isFinite(fee) || fee < 0 || fee > 5000)) {
-      return { error: "ክፍያው ትክክል አይደለም (The fee is not valid)." };
+      return { error: "Enter an hourly rate between 0 and 5,000 birr, or leave it empty." };
     }
 
     const slots: { day: number; start: number; end: number }[] = [];
@@ -175,12 +176,12 @@ export async function saveStep(
         end > 24 ||
         start >= end
       ) {
-        return { error: "የሰዓት ክልሉ ትክክል አይደለም፤ መጀመሪያው ከመጨረሻው መቅደም አለበት (Each day's start time must be before its end time)." };
+        return { error: "For each day you choose, the start time must be earlier than the end time." };
       }
       slots.push({ day, start, end });
     }
     if (slots.length === 0) {
-      return { error: "ቢያንስ አንድ ቀን ይምረጡ (Please choose at least one day)." };
+      return { error: "Choose at least one day when you are available." };
     }
 
     const { error: slotsError } = await supabase.rpc("set_my_availability", {
@@ -224,11 +225,11 @@ export async function submitApplication(
   const { supabase } = await requireRole("tutor");
 
   if (formData.get("agree") !== "on") {
-    return { error: "ስምምነቱን ያረጋግጡ (Please accept the agreement)." };
+    return { error: "Tick the box to confirm that you accept the agreement." };
   }
 
   const { data, error } = await supabase.rpc("submit_application", {
-    p_agreement_version: AGREEMENT_VERSION,
+    p_agreement_version: site.agreementVersion,
   });
   if (error) {
     console.error("submit failed:", error.message);

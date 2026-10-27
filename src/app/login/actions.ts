@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { roleHome } from "@/lib/roles";
 
 export type LoginState = { error?: string };
 
@@ -13,7 +14,7 @@ export async function login(
   const password = String(formData.get("password") ?? "");
 
   if (!email || !password) {
-    return { error: "ኢሜይልና የይለፍ ቃል ያስገቡ (Please enter your email and password)." };
+    return { error: "Enter your email and password." };
   }
 
   const supabase = await createClient();
@@ -21,8 +22,8 @@ export async function login(
 
   if (error) {
     // Same message for a wrong email or a wrong password, so attackers
-    // can't discover which emails are registered.
-    return { error: "ኢሜይሉ ወይም የይለፍ ቃሉ ትክክል አይደለም (Incorrect email or password)." };
+    // cannot discover which emails are registered.
+    return { error: "The email or password is incorrect. Check them and try again." };
   }
 
   const {
@@ -34,5 +35,5 @@ export async function login(
     .eq("id", user?.id ?? "")
     .maybeSingle();
 
-  redirect(profile?.role === "tutor" ? "/tutor" : "/account");
+  redirect(roleHome(profile?.role));
 }

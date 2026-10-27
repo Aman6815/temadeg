@@ -1,19 +1,14 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth";
+import { PageShell } from "@/components/ui";
 import DocumentsStep from "./documents-step";
 import ReviewStep from "./review-step";
 import StepForm from "./step-form";
+import Stepper from "./stepper";
+import { applySteps } from "./steps";
 
-const TOTAL_STEPS = 6;
-
-const stepTitles = [
-  "የግል መረጃ (Personal information)",
-  "ትምህርትና ልምድ (Education and experience)",
-  "መገለጫና ትምህርቶች (Profile and subjects)",
-  "የማስጠናት ምርጫ (Teaching preferences)",
-  "ሰነዶች (Documents)",
-  "ስምምነትና ማመልከቻ ማስገባት (Agreement and submission)",
-];
+export const metadata: Metadata = { title: "Tutor application" };
 
 export default async function ApplyPage({
   searchParams,
@@ -22,8 +17,9 @@ export default async function ApplyPage({
 }) {
   const { supabase, user } = await requireRole("tutor");
 
+  const total = applySteps.length;
   const { step: stepParam } = await searchParams;
-  const step = Math.min(Math.max(Number(stepParam) || 1, 1), TOTAL_STEPS);
+  const step = Math.min(Math.max(Number(stepParam) || 1, 1), total);
 
   const { data: application } = await supabase
     .from("tutor_applications")
@@ -81,7 +77,7 @@ export default async function ApplyPage({
 
     const { data: subjects } = await supabase
       .from("subjects")
-      .select("id, name_en, name_am")
+      .select("id, name_en")
       .order("sort_order");
 
     const { data: mine } = await supabase
@@ -106,30 +102,25 @@ export default async function ApplyPage({
       .eq("tutor_id", user.id)
       .order("created_at");
 
-    body = (
-      <DocumentsStep documents={documents ?? []} isStudent={application.is_student} />
-    );
+    body = <DocumentsStep documents={documents ?? []} isStudent={application.is_student} />;
   } else {
     body = <ReviewStep />;
   }
 
-  return (
-    <main className="mx-auto max-w-md p-6">
-      <h1 className="text-3xl font-bold">ተማደግ</h1>
-      <p className="mt-1 opacity-70">
-        ደረጃ {step} ከ {TOTAL_STEPS} (Step {step} of {TOTAL_STEPS})
-      </p>
+  const current = applySteps[step - 1];
 
-      <div className="mt-2 h-2 rounded bg-gray-500/30">
-        <div
-          className="h-2 rounded bg-green-700"
-          style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
-        />
+  return (
+    <PageShell>
+      <h1 className="font-display text-3xl font-bold tracking-tight">Tutor application</h1>
+      <div className="mt-6">
+        <Stepper step={step} />
       </div>
 
-      <h2 className="mt-4 text-xl font-medium">{stepTitles[step - 1]}</h2>
-
-      {body}
-    </main>
+      <section className="mt-8 rounded-2xl border border-line bg-white p-6 shadow-sm sm:p-8">
+        <h2 className="font-display text-2xl font-bold">{current.title}</h2>
+        <p className="mt-1 mb-6 text-muted">{current.description}</p>
+        {body}
+      </section>
+    </PageShell>
   );
 }

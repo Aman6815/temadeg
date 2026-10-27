@@ -3,9 +3,9 @@
 import { useActionState, useEffect, useRef } from "react";
 import { docTypeLabels } from "@/lib/labels";
 import { uploadDocument, type UploadState } from "./document-actions";
+import { Alert, buttonClass, inputClass } from "@/components/ui";
 
 const initialState: UploadState = {};
-const input = "mt-1 w-full rounded border bg-transparent px-3 py-2";
 
 export default function UploadForm() {
   const [state, formAction, pending] = useActionState(uploadDocument, initialState);
@@ -16,13 +16,13 @@ export default function UploadForm() {
   }, [state]);
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-3 rounded border p-4">
-      <h3 className="font-medium">ሰነድ ያክሉ (Add a document)</h3>
+    <form ref={formRef} action={formAction} className="space-y-4 rounded-xl border border-dashed border-brand/50 bg-brand-soft/40 p-5">
+      <h3 className="font-display text-lg font-bold">Add a document</h3>
 
       <label className="block">
-        <span>የሰነድ ዓይነት (Document type)</span>
-        <select name="docType" required defaultValue="" className={input}>
-          <option value="">—</option>
+        <span className="text-sm font-semibold">Document type</span>
+        <select name="docType" required defaultValue="" className={inputClass}>
+          <option value="">Choose a type</option>
           {Object.entries(docTypeLabels).map(([value, label]) => (
             <option key={value} value={value}>{label}</option>
           ))}
@@ -30,20 +30,17 @@ export default function UploadForm() {
       </label>
 
       <label className="block">
-        <span>ፋይል (File)</span>
+        <span className="text-sm font-semibold">File</span>
         <input name="file" type="file" required accept=".pdf,.jpg,.jpeg,.png"
-          className={input} />
-        <span className="text-sm opacity-70">
-          PDF፣ JPG ወይም PNG፣ ከ5 MB ያልበለጠ (PDF, JPG or PNG, up to 5 MB)
-        </span>
+          className={`${inputClass} file:mr-4 file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white`} />
+        <span className="mt-1.5 block text-sm text-muted">PDF, JPG or PNG, up to 5 MB.</span>
       </label>
 
-      {state.error && <p role="alert" className="text-red-500">{state.error}</p>}
-      {state.ok && <p className="text-green-600">ተጭኗል (Uploaded)</p>}
+      {state.error && <Alert>{state.error}</Alert>}
+      {state.ok && <Alert tone="success">Document uploaded.</Alert>}
 
-      <button type="submit" disabled={pending}
-        className="rounded bg-green-700 px-4 py-2 text-white disabled:opacity-50">
-        {pending ? "በመጫን ላይ… (Uploading…)" : "ጫን (Upload)"}
+      <button type="submit" disabled={pending} className={buttonClass("primary")}>
+        {pending ? "Uploading..." : "Upload document"}
       </button>
     </form>
   );

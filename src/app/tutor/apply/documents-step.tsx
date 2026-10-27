@@ -2,6 +2,7 @@ import Link from "next/link";
 import { docTypeLabels } from "@/lib/labels";
 import { deleteDocument } from "./document-actions";
 import UploadForm from "./upload-form";
+import { buttonClass, CheckIcon } from "@/components/ui";
 
 type Doc = {
   id: string;
@@ -20,60 +21,58 @@ export default function DocumentsStep({
   const has = (...types: string[]) => documents.some((d) => types.includes(d.doc_type));
 
   const checklist: { done: boolean; label: string }[] = [
-    {
-      done: has("national_id"),
-      label: "ብሔራዊ መታወቂያ፣ ፋይዳ ወይም ፓስፖርት (National ID, Fayda or passport)",
-    },
-    {
-      done: has("transcript", "grade12_result", "degree"),
-      label: "የትምህርት ማስረጃ፦ ትራንስክሪፕት፣ የ12ኛ ክፍል ውጤት ወይም ዲግሪ (Academic proof: transcript, Grade 12 result or degree)",
-    },
+    { done: has("national_id"), label: "National ID, Fayda ID or passport" },
+    { done: has("transcript", "grade12_result", "degree"), label: "Proof of education: transcript, Grade 12 result or degree" },
   ];
   if (isStudent) {
-    checklist.push({ done: has("student_id"), label: "የተማሪ መታወቂያ (Student ID)" });
+    checklist.push({ done: has("student_id"), label: "Student ID" });
   }
 
   return (
-    <div className="mt-6 space-y-4">
-      <p className="text-sm opacity-70">
-        ሰነዶችዎ ለእርስዎና ለድርጅቱ ብቻ ይታያሉ፤ ወላጆች አያዩም (Your documents are visible only to you and the organization, never to parents)
+    <div className="space-y-6">
+      <p className="text-muted">
+        Only you and the Temadeg team can see your documents. Families never see them.
       </p>
 
-      <ul className="space-y-1">
-        {checklist.map((item) => (
-          <li key={item.label}>
-            {item.done ? "✅" : "⬜"} {item.label}
-          </li>
-        ))}
-      </ul>
-
-      {documents.length > 0 && (
-        <ul className="space-y-2">
-          {documents.map((doc) => (
-            <li key={doc.id} className="flex items-center justify-between gap-2 rounded border p-3">
-              <div>
-                <p className="font-medium">{docTypeLabels[doc.doc_type]}</p>
-                <p className="text-sm opacity-70">
-                  {doc.original_name} · {Math.round(doc.size_bytes / 1024)} KB
-                </p>
-              </div>
-              <form action={deleteDocument}>
-                <input type="hidden" name="id" value={doc.id} />
-                <button type="submit" className="underline">ሰርዝ (Delete)</button>
-              </form>
+      <div>
+        <h3 className="text-sm font-semibold">Required</h3>
+        <ul className="mt-2 space-y-2">
+          {checklist.map((item) => (
+            <li key={item.label} className="flex items-center gap-3">
+              <CheckIcon done={item.done} />
+              <span className={item.done ? "text-muted line-through" : ""}>{item.label}</span>
             </li>
           ))}
         </ul>
+      </div>
+
+      {documents.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold">Uploaded</h3>
+          <ul className="mt-2 divide-y divide-line rounded-xl border border-line bg-white">
+            {documents.map((doc) => (
+              <li key={doc.id} className="flex items-center justify-between gap-3 px-4 py-3">
+                <div className="min-w-0">
+                  <p className="font-semibold">{docTypeLabels[doc.doc_type]}</p>
+                  <p className="truncate text-sm text-muted">
+                    {doc.original_name}, {Math.max(1, Math.round(doc.size_bytes / 1024))} KB
+                  </p>
+                </div>
+                <form action={deleteDocument}>
+                  <input type="hidden" name="id" value={doc.id} />
+                  <button type="submit" className={buttonClass("ghost")}>Remove</button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       <UploadForm />
 
-      <div className="flex items-center justify-between pt-2">
-        <Link href="/tutor/apply?step=4" className="underline">ተመለስ (Back)</Link>
-        <Link href="/tutor/apply?step=6"
-          className="rounded bg-green-700 px-4 py-2 font-medium text-white">
-          ቀጥል (Next)
-        </Link>
+      <div className="flex items-center justify-between border-t border-line pt-6">
+        <Link href="/tutor/apply?step=4" className={buttonClass("ghost")}>Back</Link>
+        <Link href="/tutor/apply?step=6" className={buttonClass("primary", "lg")}>Continue</Link>
       </div>
     </div>
   );

@@ -19,7 +19,6 @@ export async function createClient() {
             );
           } catch {
             // Called from a Server Component, where cookies can't be set.
-            // Safe to ignore once we add the session-refresh proxy later.
           }
         },
       },

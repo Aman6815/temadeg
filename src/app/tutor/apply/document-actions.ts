@@ -10,7 +10,7 @@ const DOC_TYPES = [
   "grade12_result", "degree", "certificate", "other",
 ];
 const MAX_BYTES = 5 * 1024 * 1024;
-const SAVE_ERROR = "ማስቀመጥ አልተቻለም። እንደገና ይሞክሩ (Could not save. Please try again).";
+const SAVE_ERROR = "We could not save your document. Please try again.";
 
 // Identify the real file type from its first bytes, not from its name.
 function detectType(bytes: Uint8Array): { mime: string; ext: string } | null {
@@ -31,19 +31,19 @@ export async function uploadDocument(
   const file = formData.get("file");
 
   if (!DOC_TYPES.includes(docType)) {
-    return { error: "የሰነዱን ዓይነት ይምረጡ (Please choose the document type)." };
+    return { error: "Choose what type of document this is." };
   }
   if (!(file instanceof File) || file.size === 0) {
-    return { error: "ፋይል ይምረጡ (Please choose a file)." };
+    return { error: "Choose a file to upload." };
   }
   if (file.size > MAX_BYTES) {
-    return { error: "ፋይሉ ከ5 MB መብለጥ የለበትም (The file must be 5 MB or smaller)." };
+    return { error: "This file is larger than 5 MB. Choose a smaller file or compress it." };
   }
 
   const bytes = new Uint8Array(await file.arrayBuffer());
   const kind = detectType(bytes);
   if (!kind) {
-    return { error: "PDF፣ JPG ወይም PNG ብቻ (Only PDF, JPG or PNG files are accepted)." };
+    return { error: "We can only accept PDF, JPG or PNG files." };
   }
 
   const { data: app } = await supabase

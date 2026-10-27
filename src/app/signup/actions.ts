@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { roleHome } from "@/lib/roles";
 
 export type SignupState = { error?: string };
 
@@ -16,13 +17,13 @@ export async function signup(
   const role = formData.get("role") === "tutor" ? "tutor" : "parent";
 
   if (fullName.length < 1 || fullName.length > 100) {
-    return { error: "ሙሉ ስምዎን ያስገቡ (Please enter your full name)." };
+    return { error: "Enter your full name." };
   }
   if (!/^\S+@\S+\.\S+$/.test(email)) {
-    return { error: "ትክክለኛ ኢሜይል ያስገቡ (Please enter a valid email)." };
+    return { error: "Enter a valid email address." };
   }
   if (password.length < 8) {
-    return { error: "የይለፍ ቃል ቢያንስ 8 ቁምፊዎች መሆን አለበት (Password must be at least 8 characters)." };
+    return { error: "Your password must be at least 8 characters." };
   }
 
   const supabase = await createClient();
@@ -35,11 +36,11 @@ export async function signup(
   if (error) {
     console.error("signup failed:", error.message);
     if (error.code === "weak_password") {
-      return { error: "የይለፍ ቃሉ ደካማ ነው። ፊደላትንና ቁጥሮችን ይጠቀሙ (Password too weak: use letters and digits)." };
+      return { error: "That password is too easy to guess. Use at least 8 characters with letters and numbers." };
     }
-    // Generic message: don't reveal whether an email is already registered.
-    return { error: "አካውንቱን መፍጠር አልተቻለም። እንደገና ይሞክሩ (Could not create the account. Please try again)." };
+    // Generic message: do not reveal whether an email is already registered.
+    return { error: "We could not create your account. Check your details and try again." };
   }
 
-  redirect(role === "tutor" ? "/tutor" : "/account");
+  redirect(roleHome(role));
 }
