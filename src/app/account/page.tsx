@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./actions";
@@ -29,6 +30,16 @@ export default async function AccountPage() {
       <h1 className="text-3xl font-bold">ተማደግ</h1>
       <p className="mt-4 text-xl">{profile?.full_name}</p>
       <p className="opacity-70">{roleLabels[profile?.role ?? ""] ?? ""}</p>
+
+      {profile?.role === "tutor" && (
+        <Link
+          href="/tutor"
+          className="mt-4 inline-block rounded bg-green-700 px-4 py-2 text-white"
+        >
+          የአስጠኚ ገጽ (Tutor area)
+        </Link>
+      )}
+
 
       <form action={signOut} className="mt-6">
         <button type="submit" className="rounded border px-4 py-2">

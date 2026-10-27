@@ -25,5 +25,14 @@ export async function login(
     return { error: "ኢሜይሉ ወይም የይለፍ ቃሉ ትክክል አይደለም (Incorrect email or password)." };
   }
 
-  redirect("/account");
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user?.id ?? "")
+    .maybeSingle();
+
+  redirect(profile?.role === "tutor" ? "/tutor" : "/account");
 }

@@ -41,5 +41,5 @@ export async function signup(
     return { error: "አካውንቱን መፍጠር አልተቻለም። እንደገና ይሞክሩ (Could not create the account. Please try again)." };
   }
 
-  redirect("/account");
+  redirect(role === "tutor" ? "/tutor" : "/account");
 }
