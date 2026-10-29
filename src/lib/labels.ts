@@ -53,3 +53,42 @@ export const statusLabels: Record<string, string> = {
   approved: "Approved",
   rejected: "Not approved",
 };
+
+export const timeOfDayLabels: Record<string, string> = {
+  any: "Any time",
+  morning: "Morning (6 AM to 12 PM)",
+  afternoon: "Afternoon (12 PM to 5 PM)",
+  evening: "Evening (5 PM to 10 PM)",
+};
+
+export const requestModeLabels: Record<string, string> = {
+  online: "Online",
+  in_person: "In person",
+  either: "Online or in person",
+};
+
+export const requestStatusLabels: Record<string, string> = {
+  open: "Finding a tutor",
+  matched: "Tutor assigned",
+  cancelled: "Cancelled",
+};
+
+export const paymentMethodLabels: Record<string, string> = {
+  telebirr: "Telebirr",
+  cbe: "Commercial Bank of Ethiopia",
+  bank_transfer: "Other bank transfer",
+  cash: "Cash",
+  other: "Other",
+};
+
+export const invoiceStatusLabels: Record<string, string> = {
+  unpaid: "Awaiting payment",
+  paid: "Paid",
+  cancelled: "Cancelled",
+};
+
+export const paymentStatusLabels: Record<string, string> = {
+  pending: "Waiting for confirmation",
+  confirmed: "Confirmed",
+  rejected: "Not accepted",
+};

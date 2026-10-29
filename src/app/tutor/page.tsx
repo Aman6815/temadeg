@@ -4,6 +4,7 @@ import { requireRole } from "@/lib/auth";
 import { Alert, buttonClass, PageShell, StatusBadge } from "@/components/ui";
 import { startApplication } from "./actions";
 import { applySteps } from "./apply/steps";
+import StudentsSection from "./students-section";
 
 export const metadata: Metadata = { title: "Tutor area" };
 
@@ -107,6 +108,8 @@ export default async function TutorHomePage() {
           </>
         )}
       </section>
+
+      {status === "approved" && <StudentsSection tutorId={user.id} />}
     </PageShell>
   );
 }

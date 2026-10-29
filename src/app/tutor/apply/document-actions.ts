@@ -9,7 +9,7 @@ const DOC_TYPES = [
   "national_id", "student_id", "transcript", "grade8_result",
   "grade12_result", "degree", "certificate", "other",
 ];
-const MAX_BYTES = 5 * 1024 * 1024;
+const MAX_BYTES = 4 * 1024 * 1024; // hosting platforms limit request size to about 4.5 MB
 const SAVE_ERROR = "We could not save your document. Please try again.";
 
 // Identify the real file type from its first bytes, not from its name.
@@ -37,7 +37,7 @@ export async function uploadDocument(
     return { error: "Choose a file to upload." };
   }
   if (file.size > MAX_BYTES) {
-    return { error: "This file is larger than 5 MB. Choose a smaller file or compress it." };
+    return { error: "This file is larger than 4 MB. Choose a smaller file or compress it." };
   }
 
   const bytes = new Uint8Array(await file.arrayBuffer());

@@ -33,7 +33,7 @@ export default function UploadForm() {
         <span className="text-sm font-semibold">File</span>
         <input name="file" type="file" required accept=".pdf,.jpg,.jpeg,.png"
           className={`${inputClass} file:mr-4 file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white`} />
-        <span className="mt-1.5 block text-sm text-muted">PDF, JPG or PNG, up to 5 MB.</span>
+        <span className="mt-1.5 block text-sm text-muted">PDF, JPG or PNG, up to 4 MB.</span>
       </label>
 
       {state.error && <Alert>{state.error}</Alert>}

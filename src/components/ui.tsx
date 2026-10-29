@@ -160,3 +160,42 @@ export function CheckIcon({ done }: { done: boolean }) {
 export function PageShell({ children, width = "max-w-3xl" }: { children: ReactNode; width?: string }) {
   return <main className={`mx-auto w-full ${width} px-5 py-10 sm:py-14`}>{children}</main>;
 }
+
+export function Pill({
+  tone = "neutral",
+  children,
+}: {
+  tone?: "neutral" | "gold" | "green" | "red" | "blue";
+  children: ReactNode;
+}) {
+  const tones = {
+    neutral: "bg-slate-100 text-slate-700",
+    gold: "bg-marigold-soft text-[#7a5800]",
+    green: "bg-grow-soft text-grow",
+    red: "bg-red-100 text-red-900",
+    blue: "bg-brand-soft text-brand-dark",
+  };
+  return (
+    <span className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${tones[tone]}`}>{children}</span>
+  );
+}
+
+export function Panel({
+  title,
+  action,
+  children,
+}: {
+  title: string;
+  action?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <section className="rounded-2xl border border-line bg-white p-6 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-display text-xl font-bold">{title}</h2>
+        {action}
+      </div>
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
