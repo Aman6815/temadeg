@@ -9,7 +9,7 @@ export const site = {
     email: "temadegtutor@gmail.com",
     phone: "0949057474 / 0968157594",
     address: "Akaki-Kality",
-    hours: "Monday to Saturday, 9:00 AM to 6:00 PM",
+    hours: "Monday to Sunday, 6:00 AM to 11:00 PM",
     telegram: "https://t.me/temadegtutor", // optional, e.g. "https://t.me/yourchannel"
   },
 
