@@ -6,7 +6,7 @@ export const site = {
   tagline: "Trusted tutors for every child, from KG to Grade 12",
 
   contact: {
-    email: "amanuelalemayehuseta@gmail.com",
+    email: "temadegtutor@gmail.com",
     phone: "0949057474 / 0968157594",
     address: "Akaki-Kality",
     hours: "Monday to Saturday, 9:00 AM to 6:00 PM",
