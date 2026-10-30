@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { signup, type SignupState } from "./actions";
 import { Alert, buttonClass, ChoiceCard, Field, inputClass } from "@/components/ui";
+import PasswordInput from "@/components/password-input";
 
 const initialState: SignupState = {};
 
@@ -40,7 +41,7 @@ export default function SignupForm({ defaultRole }: { defaultRole: "parent" | "t
           <input name="email" type="email" required autoComplete="email" className={inputClass} />
         </Field>
         <Field label="Password" hint="At least 8 characters, with letters and numbers.">
-          <input name="password" type="password" required minLength={8} autoComplete="new-password" className={inputClass} />
+           <PasswordInput name="password" autoComplete="new-password" minLength={8} />
         </Field>
 
         {state.error && <Alert>{state.error}</Alert>}

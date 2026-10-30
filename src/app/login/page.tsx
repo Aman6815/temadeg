@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { login, type LoginState } from "./actions";
 import { Alert, buttonClass, Field, inputClass, PageShell } from "@/components/ui";
+import PasswordInput from "@/components/password-input";
 
 const initialState: LoginState = {};
 
@@ -20,7 +21,7 @@ export default function LoginPage() {
           <input name="email" type="email" required autoComplete="email" className={inputClass} />
         </Field>
         <Field label="Password">
-          <input name="password" type="password" required autoComplete="current-password" className={inputClass} />
+          <PasswordInput name="password" autoComplete="current-password" />
         </Field>
 
         {state.error && <Alert>{state.error}</Alert>}
