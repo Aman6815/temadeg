@@ -4,6 +4,28 @@ Temadeg is a tutoring platform that connects families with verified tutors, from
 Families tell us what their child needs, tutors apply and are verified by the organization, and the
 organization matches them, bills families monthly and pays tutors (80% tutor share, 20% commission).
 
+## Live demo
+
+| | |
+|---|---|
+| Live website | https://temadeg.vercel.app |
+| Source code | https://github.com/Aman6815/temadeg |
+| Walkthrough video |  |
+
+### Try it yourself
+Sign up at the live website as a parent or as a tutor. Use fictional names and documents only, and
+never real IDs or children's information. The admin area is only available to the organization's
+admin account, so it is shown in the walkthrough video.
+
+### How it is hosted
+- Website: Vercel (free plan, used for this academic demo)
+- Database, login and private file storage: Supabase (free plan)
+- A scheduled daily visit to `/api/keepalive` stops the free database from pausing
+
+The free plans suit this demonstration. Before the commercial launch the project will move to a hosting
+plan that allows commercial use, with a custom domain, email confirmation turned on, and a full
+security review.
+
 This project is a graduation project that is also the foundation of a real business.
 
 ## What works today
